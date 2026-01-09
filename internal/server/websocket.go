@@ -18,25 +18,26 @@ func (c *Client) Read(manager *ClientManager) {
 		_, msg, err := c.Socket.ReadMessage()
 		if err != nil {
 			log.Println("read error:", err)
-			break
+			return
 		}
 
 		message, _ := json.Marshal(models.Message{
-			Sender: c.ID,
+			Sender:  c.ID,
 			Content: string(msg),
 		})
 
 		manager.Brodcast <- message
 	}
+}
 
-	func (c *Client) Write() {
-		defer c.Socket.Close()
+func (c *Client) Write() {
+	defer c.Socket.Close()
 
-		for msg := range c.Send {
-			err := c.Socket.WriteMessage(websocket.TextMessage, msg)
-			if err != nil {
-				return
-			}
+	for msg := range c.Send {
+		err := c.Socket.WriteMessage(
+			websocket.TextMessage, msg)
+		if err != nil {
+			return
 		}
 	}
 }
